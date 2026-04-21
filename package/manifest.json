@@ -1,0 +1,10 @@
+{
+    "name": "TitleScreenQuickAccess",
+    "author": "end_4",
+    "version_number": "1.0.0",
+    "website_url": "https://github.com/end-4/ultrakill-title-screen-quick-access",
+    "description": "Custom levels & Cyber Grind buttons",
+    "dependencies": [
+        "BepInEx-BepInExPack-5.4.2100"
+    ]
+}

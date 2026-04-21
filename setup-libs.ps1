@@ -27,7 +27,14 @@ if (-not (Test-Path $ukManaged)) {
     Write-Host "Please ensure -UltrakillPath points to the root of your ULTRAKILL installation" -ForegroundColor Yellow
     return
 }
-$ukDlls = @("Assembly-CSharp.dll")
+$ukDlls = @(
+    "Assembly-CSharp.dll"
+    "Unity.TextMeshPro.dll"
+    "UnityEngine.dll"
+    "UnityEngine.CoreModule.dll"
+    "UnityEngine.UI.dll"
+    "UnityEngine.ImageConversionModule.dll"
+)
 
 foreach ($dll in $ukDlls) {
     $source = Join-Path $ukManaged $dll
@@ -39,17 +46,24 @@ foreach ($dll in $ukDlls) {
     }
 }
 
-# 2) Copy PluginConfigurator DLL from r2modman profile
-$pcSource = Join-Path $R2ModmanProfilePath "BepInEx\plugins\EternalsTeam-PluginConfigurator\PluginConfigurator\PluginConfigurator.dll"
-if (-not (Test-Path (Split-Path $pcSource))) {
-    Write-Warning "PluginConfigurator directory not found in the profile. Ensure PluginConfigurator is installed in r2modman and/or make sure -R2ModmanProfilePath points to your R2Modman profile"
+# 2) Copy Plugin DLLs from r2modman profile
+$R2ModmanProfilePath
+if (-not (Test-Path $R2ModmanProfilePath)) {
+    Write-Warning "BepInEx plugins directory not found in the profile. Ensure your plugins are installed in r2modman and/or make sure -R2ModmanProfilePath points to your R2Modman profile"
 }
 
-if (Test-Path $pcSource) {
-    Copy-Item -Path $pcSource -Destination $targetDir -Force
-    Write-Host "Successfully copied: PluginConfigurator.dll"
-} else {
-    Write-Error "Source file not found: $pcSource"
+$r2Dlls = @(
+    "BepInEx\core\BepInEx.dll"
+)
+
+foreach ($dll in $r2Dlls) {
+    $source = Join-Path $R2ModmanProfilePath $dll
+    if (Test-Path $source) {
+        Copy-Item -Path $source -Destination $targetDir -Force
+        Write-Host "Successfully copied: $(Split-Path $dll -Leaf)"
+    } else {
+        Write-Error "Source file not found: $source"
+    }
 }
 
 Write-Host "`nSetup finished. If any errors occurred (e.g. files not found), please specify your paths manually using the -UltrakillPath and -R2ModmanProfilePath parameters."
