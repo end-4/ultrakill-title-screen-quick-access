@@ -3,7 +3,7 @@
     "author": "end_4",
     "version_number": "1.0.0",
     "website_url": "https://github.com/end-4/ultrakill-title-screen-quick-access",
-    "description": "Adds some shortcuts to the title screen",
+    "description": "Adds title screen buttons for Cyber Grind, custom levels, plugin config, and sandbox",
     "dependencies": [
         "BepInEx-BepInExPack-5.4.2100"
     ]
