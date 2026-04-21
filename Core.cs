@@ -149,10 +149,10 @@ namespace TitleScreenQuickAccess {
         }
 
         private void CreateCustomLevelButton() {
-            GameObject customLevelsButton = CreateSquareTitleScreenIconButton("CustomLevels", new Vector2(502, 0), Path.Combine(workingDir, "assets/angry.png"));
             GameObject canvas = SceneManager.GetActiveScene().GetRootGameObjects()
                 .Where(obj => obj.name == "Canvas").FirstOrDefault();
             if (canvas == null) return;
+            GameObject customLevelsButton = CreateSquareTitleScreenIconButton("CustomLevels", new Vector2(502, 0), Path.Combine(workingDir, "assets/angry.png"));
 
             // Add button behavior
             Button buttonComponent = customLevelsButton.GetComponent<Button>();
@@ -161,7 +161,7 @@ namespace TitleScreenQuickAccess {
                 GameObject mainMenu = GameObject.Find("Canvas/Main Menu (1)");
                 GameObject optionsMenu = canvas.transform.Find("OptionsMenu").gameObject;
 
-                // find angry level loader conf btn
+                // Find angry level loader conf btn
                 Transform pages = optionsMenu.transform.Find("Pages");
                 Transform pluginConf = pages.transform.Find("ConcretePanel(Clone)");
                 GameObject pluginConfPanelContent = FindNestedObject(canvas, "OptionsMenu/Pages/ConcretePanel(Clone)/Scroll Rect/Contents");
@@ -185,12 +185,13 @@ namespace TitleScreenQuickAccess {
         }
 
         private void CreatePluginConfigButton() {
+            GameObject canvas = SceneManager.GetActiveScene().GetRootGameObjects()
+                    .Where(obj => obj.name == "Canvas").FirstOrDefault();
+            if (canvas == null) return;
+
             GameObject pluginConfButton = CreateSquareTitleScreenIconButton("PluginConfig", new Vector2(426, -75), Path.Combine(workingDir, "assets/plugins.png"));
             Button buttonComponent = pluginConfButton.GetComponent<Button>();
             buttonComponent.onClick.AddListener(() => {
-                GameObject canvas = SceneManager.GetActiveScene().GetRootGameObjects()
-                    .Where(obj => obj.name == "Canvas").FirstOrDefault();
-                if (canvas == null) return;
 
                 // Menus
                 GameObject mainMenu = GameObject.Find("Canvas/Main Menu (1)");
