@@ -58,18 +58,34 @@ namespace TitleScreenQuickAccess {
                     var canvas = GameObject.Find("Canvas");
                     if (canvas != null) tooltipObj.transform.SetParent(canvas.transform, false);
 
-                    var bgImage = tooltipObj.AddComponent<Image>();
-                    bgImage.color = new Color(0, 0, 0, 0.85f);
+                    RectTransform tooltipRT = tooltipObj.GetComponent<RectTransform>();
+                    if (tooltipRT == null) tooltipRT = tooltipObj.AddComponent<RectTransform>();
+                    tooltipRT.pivot = new Vector2(0.5f, 0f);
+
+                    var bgObj = new GameObject("TooltipBackground");
+                    bgObj.transform.SetParent(tooltipObj.transform, false);
+                    var bgRT = bgObj.AddComponent<RectTransform>();
+                    bgRT.anchorMin = Vector2.zero;
+                    bgRT.anchorMax = Vector2.one;
+                    bgRT.sizeDelta = Vector2.zero;
+
+                    var bgImage = bgObj.AddComponent<Image>();
+                    var sourceImage = GetComponent<Image>();
+                    if (sourceImage != null) {
+                        bgImage.sprite = sourceImage.sprite;
+                        bgImage.type = sourceImage.type;
+                        bgImage.pixelsPerUnitMultiplier = sourceImage.pixelsPerUnitMultiplier;
+                    }
+                    bgImage.color = new Color(1, 1, 1, 1);
                     bgImage.raycastTarget = false;
+                    bgObj.AddComponent<LayoutElement>().ignoreLayout = true;
 
                     var fitter = tooltipObj.AddComponent<ContentSizeFitter>();
                     fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
                     fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
                     var layout = tooltipObj.AddComponent<HorizontalLayoutGroup>();
-                    layout.childControlHeight = true;
-                    layout.childControlWidth = true;
-                    layout.padding = new RectOffset(10, 10, 5, 5);
+                    layout.padding = new RectOffset(15, 15, 10, 10);
 
                     var textObj = new GameObject("Text");
                     textObj.transform.SetParent(tooltipObj.transform, false);
@@ -96,17 +112,17 @@ namespace TitleScreenQuickAccess {
             private void positionTooltipHere() {
                 if (tooltipObj == null) return;
                 RectTransform rt = GetComponent<RectTransform>();
-                float btnWidth = rt.rect.width;
-                float btnHeight = rt.rect.height;
-                tooltipObj.transform.position = transform.position + new Vector3(btnWidth / 2, btnHeight / 2, 0);
+                float verticalOffset = (rt.rect.height * (1f - rt.pivot.y)) + 15f;
+                float horizOffset = rt.rect.width * (1f - rt.pivot.x) / 2;
+                tooltipObj.transform.position = transform.position + new Vector3(horizOffset, verticalOffset, 0);
             }
 
             bool hasMouse = false;
-            public void OnPointerEnter(PointerEventData eventData) { 
+            public void OnPointerEnter(PointerEventData eventData) {
                 handleEnter();
                 hasMouse = true;
             }
-            public void OnSelect(BaseEventData eventData) { 
+            public void OnSelect(BaseEventData eventData) {
                 handleEnter();
                 if (!hasMouse) positionTooltipHere();
             }
@@ -116,6 +132,10 @@ namespace TitleScreenQuickAccess {
 
             private Vector3 prevMousePos;
             private void Update() {
+                if (!hasMouse) {
+                    handleExit();
+                    return;
+                }
                 if (prevMousePos == UnityEngine.Input.mousePosition) return;
                 prevMousePos = UnityEngine.Input.mousePosition;
                 if (tooltipObj != null && tooltipObj.activeSelf) {
