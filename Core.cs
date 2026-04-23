@@ -11,7 +11,7 @@ using UnityEngine.EventSystems;
 using TMPro;
 
 namespace TitleScreenQuickAccess {
-    [BepInPlugin("com.github.end-4.titleScreenQuickAccess", "TitleScreenQuickAccess", "1.0.0")]
+    [BepInPlugin("com.github.end-4.titleScreenQuickAccess", "TitleScreenQuickAccess", "1.0.1")]
     public class Core : BaseUnityPlugin {
 
         public static string workingPath = Assembly.GetExecutingAssembly().Location;

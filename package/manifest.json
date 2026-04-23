@@ -1,7 +1,7 @@
 {
     "name": "TitleScreenQuickAccess",
     "author": "end_4",
-    "version_number": "1.0.0",
+    "version_number": "1.0.1",
     "website_url": "https://github.com/end-4/ultrakill-title-screen-quick-access",
     "description": "Adds title screen buttons for Cyber Grind, custom levels, plugin config, and sandbox",
     "dependencies": [
