@@ -132,26 +132,43 @@ namespace TitleScreenQuickAccess {
             return btn;
         }
 
-        private void CreateCyberGrindButton() {
-            GameObject cyberGrindButton = CreateSquareTitleScreenIconButton("CustomLevels", new Vector2(426, 0), Path.Combine(workingDir, "assets/cybergrind.png"));
+        /// <summary>
+        /// Method <c>CreateVanillaShortcutButton</c> creates a shortcut button for vanilla stuff.
+        /// Vanilla buttons don't seem to have race condition issues; we can find them immediately on creation instead of finding every time the button is clicked
+        /// </summary>
+        private GameObject? CreateVanillaShortcutButton(string name, Vector2 offset, string iconPath, string canvasPathToClickedButton) {
+            GameObject newButton = CreateSquareTitleScreenIconButton(name, offset, iconPath);
 
             // Find necessary stuff
             GameObject canvas = SceneManager.GetActiveScene().GetRootGameObjects()
                 .Where(obj => obj.name == "Canvas").FirstOrDefault();
-            if (canvas == null) return;
-            GameObject originalCyberGrindButton = FindNestedObject(canvas, "Chapter Select/Chapters/The Cyber Grind");
+            if (canvas == null) return null;
+            GameObject originalCyberGrindButton = FindNestedObject(canvas, canvasPathToClickedButton);
 
             // Add button behavior
-            Button buttonComponent = cyberGrindButton.GetComponent<Button>();
+            Button buttonComponent = newButton.GetComponent<Button>();
             buttonComponent.onClick.AddListener(() => {
                 originalCyberGrindButton.GetComponent<Button>().onClick.Invoke();
             });
+            return newButton;
         }
 
-        private void CreateCustomLevelButton() {
+        private GameObject? CreateCyberGrindButton() {
+            return CreateVanillaShortcutButton("CustomLevels", new Vector2(426, 0), 
+                Path.Combine(workingDir, "assets/cybergrind.png"),
+                "Chapter Select/Chapters/The Cyber Grind");
+        }
+
+        private GameObject? CreateSandboxButton() {
+            return CreateVanillaShortcutButton("Sandbox", new Vector2(426, -150), 
+                Path.Combine(workingDir, "assets/sandbox.png"), 
+                "Chapter Select/Chapters/Sandbox");
+        }
+
+        private GameObject? CreateCustomLevelButton() {
             GameObject canvas = SceneManager.GetActiveScene().GetRootGameObjects()
                 .Where(obj => obj.name == "Canvas").FirstOrDefault();
-            if (canvas == null) return;
+            if (canvas == null) return null;
             GameObject customLevelsButton = CreateSquareTitleScreenIconButton("CustomLevels", new Vector2(502, 0), Path.Combine(workingDir, "assets/angry.png"));
 
             // Add button behavior
@@ -182,12 +199,13 @@ namespace TitleScreenQuickAccess {
                 pluginConf.gameObject.SetActive(true);
                 selectObject.GetComponent<Button>().onClick.Invoke();
             });
+            return customLevelsButton;
         }
 
-        private void CreatePluginConfigButton() {
+        private GameObject? CreatePluginConfigButton() {
             GameObject canvas = SceneManager.GetActiveScene().GetRootGameObjects()
                     .Where(obj => obj.name == "Canvas").FirstOrDefault();
-            if (canvas == null) return;
+            if (canvas == null) return null;
 
             GameObject pluginConfButton = CreateSquareTitleScreenIconButton("PluginConfig", new Vector2(426, -75), Path.Combine(workingDir, "assets/plugins.png"));
             Button buttonComponent = pluginConfButton.GetComponent<Button>();
@@ -207,22 +225,7 @@ namespace TitleScreenQuickAccess {
                 }
                 pluginConf.gameObject.SetActive(true);
             });
-        }
-
-        private void CreateSandboxButton() {
-            GameObject cyberGrindButton = CreateSquareTitleScreenIconButton("Sandbox", new Vector2(426, -150), Path.Combine(workingDir, "assets/sandbox.png"));
-
-            // Find necessary stuff
-            GameObject canvas = SceneManager.GetActiveScene().GetRootGameObjects()
-                .Where(obj => obj.name == "Canvas").FirstOrDefault();
-            if (canvas == null) return;
-            GameObject originalCyberGrindButton = FindNestedObject(canvas, "Chapter Select/Chapters/Sandbox");
-
-            // Add button behavior
-            Button buttonComponent = cyberGrindButton.GetComponent<Button>();
-            buttonComponent.onClick.AddListener(() => {
-                originalCyberGrindButton.GetComponent<Button>().onClick.Invoke();
-            });
+            return pluginConfButton;
         }
 
         private void CreateQuickAccessButtons() {

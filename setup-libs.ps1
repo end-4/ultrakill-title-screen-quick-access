@@ -11,7 +11,7 @@ Set-StrictMode -Version Latest
 $root = $PSScriptRoot
 $targetDir = Join-Path $root "libs\Managed"
 
-Write-Host "--- RocketRideHUD Library Setup ---"
+Write-Host "--- Library Setup ---"
 Write-Host "Target directory: $targetDir"
 
 # Ensure the target directory exists
