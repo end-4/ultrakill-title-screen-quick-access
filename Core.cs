@@ -132,10 +132,7 @@ namespace TitleScreenQuickAccess {
 
             private Vector3 prevMousePos;
             private void Update() {
-                if (!hasMouse) {
-                    handleExit();
-                    return;
-                }
+                if (!hasMouse) return;
                 if (prevMousePos == UnityEngine.Input.mousePosition) return;
                 prevMousePos = UnityEngine.Input.mousePosition;
                 if (tooltipObj != null && tooltipObj.activeSelf) {
