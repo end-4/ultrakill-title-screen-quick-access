@@ -2,7 +2,7 @@
 
 The new buttons in reading order: Cyber Grind, Angry Level Loader, Plugin Config, Sandbox
 
-<img alt="image" src="https://github.com/user-attachments/assets/41b9f8b1-3a63-4df5-975e-23101db47cd2" />
+<img alt="image" src="https://github.com/user-attachments/assets/95c453e1-0c2f-43f6-93ff-28e4e4e83884" />
 
 # Known limitations
 
