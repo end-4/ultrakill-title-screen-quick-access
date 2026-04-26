@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,7 +12,7 @@ using UnityEngine.EventSystems;
 using TMPro;
 
 namespace TitleScreenQuickAccess {
-    [BepInPlugin("com.github.end-4.titleScreenQuickAccess", "TitleScreenQuickAccess", "1.0.1")]
+    [BepInPlugin("com.github.end-4.titleScreenQuickAccess", "TitleScreenQuickAccess", "1.0.2")]
     public class Core : BaseUnityPlugin {
 
         public static string workingPath = Assembly.GetExecutingAssembly().Location;
@@ -19,8 +20,21 @@ namespace TitleScreenQuickAccess {
 
         internal static ManualLogSource Log;
 
+        public bool hasAngry = false;
+        public bool hasPluginConfigurator = false;
+
         private void Awake() {
             Log = Logger;
+            foreach (var plugin in Chainloader.PluginInfos) {
+                switch(plugin.Value.Metadata.GUID) {
+                    case "com.eternalUnion.angryLevelLoader":
+                        hasAngry = true;
+                        break;
+                    case "com.eternalUnion.pluginConfigurator":
+                        hasPluginConfigurator = true;
+                        break;
+                }
+            }
 
             SceneManager.sceneLoaded += OnSceneLoaded;
             Log.LogInfo("TitleScreenQuickAccess loaded!");
@@ -50,6 +64,10 @@ namespace TitleScreenQuickAccess {
             public string message = "";
             private static GameObject? tooltipObj;
             private static TMP_Text? textComp;
+
+            public void hideTooltip() {
+                handleExit();
+            }
 
             private void handleEnter() {
                 // Create tooltip obj if doesn't exist
@@ -101,7 +119,7 @@ namespace TitleScreenQuickAccess {
                 }
 
                 tooltipObj.SetActive(true);
-                textComp.text = message;
+                if (textComp != null) textComp.text = message;
             }
 
             private void handleExit() {
@@ -247,6 +265,7 @@ namespace TitleScreenQuickAccess {
             // Add button behavior
             Button buttonComponent = newButton.GetComponent<Button>();
             buttonComponent.onClick.AddListener(() => {
+                newButton.GetComponent<TooltipHandler>().hideTooltip();
                 clickedButton.GetComponent<Button>().onClick.Invoke();
             });
             return newButton;
@@ -270,11 +289,13 @@ namespace TitleScreenQuickAccess {
             GameObject canvas = SceneManager.GetActiveScene().GetRootGameObjects()
                 .Where(obj => obj.name == "Canvas").FirstOrDefault();
             if (canvas == null) return null;
-            GameObject customLevelsButton = CreateSquareTitleScreenIconButton("CustomLevels", new Vector2(502, 0), Path.Combine(workingDir, "assets/angry.png"), "Custom levels (Angry Level Loader)");
+            GameObject newButton = CreateSquareTitleScreenIconButton("CustomLevels", new Vector2(502, 0), Path.Combine(workingDir, "assets/angry.png"), "Custom levels (Angry Level Loader)");
 
             // Add button behavior
-            Button buttonComponent = customLevelsButton.GetComponent<Button>();
+            Button buttonComponent = newButton.GetComponent<Button>();
             buttonComponent.onClick.AddListener(() => {
+                newButton.GetComponent<TooltipHandler>().hideTooltip();
+
                 // Menus
                 GameObject mainMenu = GameObject.Find("Canvas/Main Menu (1)");
                 GameObject optionsMenu = canvas.transform.Find("OptionsMenu").gameObject;
@@ -285,7 +306,7 @@ namespace TitleScreenQuickAccess {
                 GameObject? pluginConfPanelContent = FindNestedObject(canvas, "OptionsMenu/Pages/ConcretePanel(Clone)/Scroll Rect/Contents");
                 if (pluginConfPanelContent == null) return;
                 GameObject? configField = FindByChildText(pluginConfPanelContent, "Angry Level Loader");
-                GameObject selectObject = configField.transform.Find("Select").gameObject;
+                GameObject? selectObject = configField?.transform.Find("Select").gameObject;
 
                 // Find plugin conf btn
                 Transform navrail = optionsMenu.transform.Find("Navigation Rail");
@@ -299,9 +320,9 @@ namespace TitleScreenQuickAccess {
                 }
 
                 pluginConf.gameObject.SetActive(true);
-                selectObject.GetComponent<Button>().onClick.Invoke();
+                selectObject?.GetComponent<Button>().onClick.Invoke();
             });
-            return customLevelsButton;
+            return newButton;
         }
 
         private GameObject? CreatePluginConfigButton() {
@@ -309,9 +330,10 @@ namespace TitleScreenQuickAccess {
                     .Where(obj => obj.name == "Canvas").FirstOrDefault();
             if (canvas == null) return null;
 
-            GameObject pluginConfButton = CreateSquareTitleScreenIconButton("PluginConfig", new Vector2(426, -75), Path.Combine(workingDir, "assets/plugins.png"), "Plugin Configurator");
-            Button buttonComponent = pluginConfButton.GetComponent<Button>();
+            GameObject newButton = CreateSquareTitleScreenIconButton("PluginConfig", new Vector2(426, -75), Path.Combine(workingDir, "assets/plugins.png"), "Plugin Configurator");
+            Button buttonComponent = newButton.GetComponent<Button>();
             buttonComponent.onClick.AddListener(() => {
+                newButton.GetComponent<TooltipHandler>().hideTooltip();
 
                 // Menus
                 GameObject mainMenu = GameObject.Find("Canvas/Main Menu (1)");
@@ -327,13 +349,13 @@ namespace TitleScreenQuickAccess {
                 }
                 pluginConf.gameObject.SetActive(true);
             });
-            return pluginConfButton;
+            return newButton;
         }
 
         private void CreateQuickAccessButtons() {
             CreateCyberGrindButton();
-            CreateCustomLevelButton();
-            CreatePluginConfigButton();
+            if (hasAngry) CreateCustomLevelButton();
+            if (hasPluginConfigurator) CreatePluginConfigButton();
             CreateSandboxButton();
         }
     }
