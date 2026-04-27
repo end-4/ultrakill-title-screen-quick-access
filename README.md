@@ -4,10 +4,6 @@ The new buttons in reading order: Cyber Grind, Angry Level Loader, Plugin Config
 
 <img alt="image" src="https://github.com/user-attachments/assets/95c453e1-0c2f-43f6-93ff-28e4e4e83884" />
 
-# Known limitations
-
-- Custom level and plugin config buttons show even when they're unavailable
-
 # Building
 
 - Use `setup-libs.ps1`
